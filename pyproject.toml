@@ -1,0 +1,27 @@
+[project]
+name = "database-management"
+version = "0.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "click==8.5.0",
+    "psycopg2-binary==2.9.13",
+    "pydantic-settings==2.15.0",
+]
+
+[project.scripts]
+database-management = "database_management:main"
+
+[build-system]
+requires = ["uv_build>=0.12.24,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "database_management"
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+    "ruff==0.17.0",
+]
