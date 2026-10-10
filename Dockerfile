@@ -17,7 +17,7 @@ COPY src ./src
 RUN uv sync --locked --no-dev --no-editable
 
 # ---- runtime ----
-FROM python:3.13-slim-trixie
+FROM python:3.14-slim-trixie
 
 ARG PG_MAJOR=18
 
