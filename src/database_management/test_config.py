@@ -39,14 +39,34 @@ def test_unrelated_shell_variables_do_not_leak_into_settings(
         ("POSTGRES_PORT", "6543", "port", 6543),
         ("POSTGRES_DB", "app", "dbname", "app"),
         ("POSTGRES_USER", "backup", "user", "backup"),
-        ("BACKUP_INTERVAL_SECONDS", "60", "interval_seconds", 60),
-        ("BACKUP_STAGING_DIR", "/data/stage", "staging_dir", Path("/data/stage")),
-        ("BACKUP_KEEP", "3", "keep", 3),
+        ("DATABASE_MANAGEMENT_INTERVAL_SECONDS", "60", "interval_seconds", 60),
+        (
+            "DATABASE_MANAGEMENT_STAGING_DIR",
+            "/data/stage",
+            "staging_dir",
+            Path("/data/stage"),
+        ),
+        ("DATABASE_MANAGEMENT_KEEP", "3", "keep", 3),
     ],
 )
 def test_env_variable_maps_to_field(monkeypatch, var, value, field, expected):
     monkeypatch.setenv(var, value)
     assert getattr(load_settings(), field) == expected
+
+
+@pytest.mark.parametrize(
+    ("old_var", "value", "field", "default"),
+    [
+        ("BACKUP_KEEP", "2", "keep", 7),
+        ("BACKUP_INTERVAL_SECONDS", "60", "interval_seconds", 3600),
+        ("BACKUP_TARGETS", "file:///old", "targets", ()),
+    ],
+)
+def test_old_backup_variable_names_are_ignored(
+    monkeypatch, old_var, value, field, default
+):
+    monkeypatch.setenv(old_var, value)
+    assert getattr(load_settings(), field) == default
 
 
 def test_password_is_secret(monkeypatch):
@@ -67,13 +87,13 @@ def test_password_is_secret(monkeypatch):
     ],
 )
 def test_env_targets_split_on_commas_and_spaces(monkeypatch, raw, expected):
-    monkeypatch.setenv("BACKUP_TARGETS", raw)
+    monkeypatch.setenv("DATABASE_MANAGEMENT_TARGETS", raw)
     assert load_settings().targets == expected
 
 
 def test_keyword_overrides_beat_environment(monkeypatch):
-    monkeypatch.setenv("BACKUP_KEEP", "2")
-    monkeypatch.setenv("BACKUP_TARGETS", "file:///from/env")
+    monkeypatch.setenv("DATABASE_MANAGEMENT_KEEP", "2")
+    monkeypatch.setenv("DATABASE_MANAGEMENT_TARGETS", "file:///from/env")
     settings = load_settings(keep=5, targets=("file:///from/flag",))
     assert settings.keep == 5
     assert settings.targets == ("file:///from/flag",)
@@ -93,9 +113,9 @@ def test_environment_beats_dotenv(isolated_config, monkeypatch):
 @pytest.mark.parametrize(
     ("var", "value"),
     [
-        ("BACKUP_KEEP", "0"),
-        ("BACKUP_KEEP", "abc"),
-        ("BACKUP_INTERVAL_SECONDS", "0"),
+        ("DATABASE_MANAGEMENT_KEEP", "0"),
+        ("DATABASE_MANAGEMENT_KEEP", "abc"),
+        ("DATABASE_MANAGEMENT_INTERVAL_SECONDS", "0"),
         ("POSTGRES_PORT", "x"),
         ("POSTGRES_PORT", "70000"),
     ],
@@ -108,7 +128,7 @@ def test_invalid_values_are_rejected(monkeypatch, var, value):
 
 def test_log_summary_lists_every_field_and_hides_password(monkeypatch, caplog):
     monkeypatch.setenv("POSTGRES_PASSWORD", "hunter2")
-    monkeypatch.setenv("BACKUP_TARGETS", "file:///a,file:///b")
+    monkeypatch.setenv("DATABASE_MANAGEMENT_TARGETS", "file:///a,file:///b")
     settings = load_settings()
 
     with caplog.at_level(logging.INFO, logger="database_management.config"):
