@@ -121,7 +121,7 @@ def test_cli_requires_a_target():
 def test_cli_target_flag_overrides_env(monkeypatch):
     from database_management.cli import _load_settings
 
-    monkeypatch.setenv("BACKUP_TARGETS", "file:///from/env")
+    monkeypatch.setenv("DATABASE_MANAGEMENT_TARGETS", "file:///from/env")
     assert _load_settings(("file:///from/flag",)).targets == ("file:///from/flag",)
     assert _load_settings(()).targets == ("file:///from/env",)
 
@@ -129,6 +129,6 @@ def test_cli_target_flag_overrides_env(monkeypatch):
 def test_cli_keep_flag_overrides_env(monkeypatch):
     from database_management.cli import _load_settings
 
-    monkeypatch.setenv("BACKUP_KEEP", "2")
+    monkeypatch.setenv("DATABASE_MANAGEMENT_KEEP", "2")
     assert _load_settings((), keep=5).keep == 5
     assert _load_settings(()).keep == 2

@@ -18,7 +18,7 @@ uv run database-management automated-backup --target file:///var/backups/pg --in
 Targets can also come from the environment (comma or space separated). `--target` overrides it:
 
 ```bash
-BACKUP_TARGETS=file:///var/backups/pg,file:///mnt/nas/pg
+DATABASE_MANAGEMENT_TARGETS=file:///var/backups/pg,file:///mnt/nas/pg
 ```
 
 A target is a URI. The scheme picks the backend. Supported today: `file://` (absolute path only).
@@ -32,12 +32,12 @@ A target is a URI. The scheme picks the backend. Supported today: `file://` (abs
 | `POSTGRES_DB`             | `postgres`                      | Database used for the connection healthcheck |
 | `POSTGRES_USER`           | `postgres`                      | User                                         |
 | `POSTGRES_PASSWORD`       | `postgres`                      | Password                                     |
-| `BACKUP_TARGETS`          | _(none, required)_              | Target URIs, comma or space separated        |
-| `BACKUP_INTERVAL_SECONDS` | `3600`                          | Seconds between cycles in `automated-backup` |
-| `BACKUP_STAGING_DIR`      | `<system temp>/postgres-backup` | Where `pg_dump` writes before storing        |
-| `BACKUP_KEEP`             | `7`                             | Newest backups kept per database, per target |
+| `DATABASE_MANAGEMENT_TARGETS`          | _(none, required)_              | Target URIs, comma or space separated        |
+| `DATABASE_MANAGEMENT_INTERVAL_SECONDS` | `3600`                          | Seconds between cycles in `automated-backup` |
+| `DATABASE_MANAGEMENT_STAGING_DIR`      | `<system temp>/postgres-backup` | Where `pg_dump` writes before storing        |
+| `DATABASE_MANAGEMENT_KEEP`             | `7`                             | Newest backups kept per database, per target |
 
-Values can be set in a `.env` file in the working directory, or as environment variables. Environment variables take precedence over `.env`, and CLI flags take precedence over both. Invalid values (for example `BACKUP_KEEP=0`) stop the command with exit code 1.
+Values can be set in a `.env` file in the working directory, or as environment variables. Environment variables take precedence over `.env`, and CLI flags take precedence over both. Invalid values (for example `DATABASE_MANAGEMENT_KEEP=0`) stop the command with exit code 1.
 
 At startup, `backup` and `automated-backup` log the effective configuration. The password is always masked.
 

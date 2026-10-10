@@ -32,7 +32,7 @@ def _prepare_targets(settings: Settings) -> list[BaseBackend]:
     """Parse and preflight every target. Exits with code 1 on any problem."""
     if not settings.targets:
         click.echo(
-            "No targets given. Use --target file:///path or set BACKUP_TARGETS.",
+            "No targets given. Use --target file:///path or set DATABASE_MANAGEMENT_TARGETS.",
             err=True,
         )
         sys.exit(1)
@@ -61,7 +61,7 @@ target_option = click.option(
     "targets",
     multiple=True,
     help="Backup destination URI, e.g. file:///var/backups/pg. Repeat for several. "
-    "Overrides BACKUP_TARGETS.",
+    "Overrides DATABASE_MANAGEMENT_TARGETS.",
 )
 
 
@@ -70,7 +70,7 @@ keep_option = click.option(
     type=click.IntRange(min=1),
     default=None,
     help="Newest backups to keep per database, per target. "
-    "Overrides BACKUP_KEEP (default: 7).",
+    "Overrides DATABASE_MANAGEMENT_KEEP (default: 7).",
 )
 
 
@@ -99,7 +99,7 @@ def backup(targets: tuple[str, ...], keep: int | None) -> None:
     "--interval",
     type=click.IntRange(min=1),
     default=None,
-    help="Seconds between backup cycles. Overrides BACKUP_INTERVAL_SECONDS (default: 3600).",
+    help="Seconds between backup cycles. Overrides DATABASE_MANAGEMENT_INTERVAL_SECONDS (default: 3600).",
 )
 @keep_option
 def automated_backup(

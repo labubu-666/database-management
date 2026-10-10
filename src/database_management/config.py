@@ -35,17 +35,17 @@ class Settings(BaseSettings):
         default=SecretStr("postgres"), validation_alias="POSTGRES_PASSWORD"
     )
     interval_seconds: int = Field(
-        default=3600, ge=1, validation_alias="BACKUP_INTERVAL_SECONDS"
+        default=3600, ge=1, validation_alias="DATABASE_MANAGEMENT_INTERVAL_SECONDS"
     )
     targets: Annotated[tuple[str, ...], NoDecode] = Field(
-        default=(), validation_alias="BACKUP_TARGETS"
+        default=(), validation_alias="DATABASE_MANAGEMENT_TARGETS"
     )
     staging_dir: Path = Field(
         default_factory=lambda: Path(tempfile.gettempdir()) / "postgres-backup",
-        validation_alias="BACKUP_STAGING_DIR",
+        validation_alias="DATABASE_MANAGEMENT_STAGING_DIR",
     )
     # newest backups kept per database, per target
-    keep: int = Field(default=7, ge=1, validation_alias="BACKUP_KEEP")
+    keep: int = Field(default=7, ge=1, validation_alias="DATABASE_MANAGEMENT_KEEP")
 
     @field_validator("targets", mode="before")
     @classmethod

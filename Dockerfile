@@ -46,7 +46,7 @@ COPY --from=builder --chown=app:app /app/.venv /app/.venv
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
-    BACKUP_TARGETS=file:///app/backups
+    DATABASE_MANAGEMENT_TARGETS=file:///app/backups
 
 WORKDIR /app
 USER app
